@@ -1,5 +1,6 @@
 package backend.backend.entity;
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonManagedReference;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -25,9 +26,10 @@ public class JobApplication {
     private Status status;
 
     @OneToOne(mappedBy = "jobApplication", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    @JsonManagedReference
     private ApplicationDetails applicationDetails;
 
-    @ManyToMany(fetch = FetchType.LAZY)
+    @ManyToMany(fetch = FetchType.EAGER)
     @JoinTable(
         name = "job_application_tags",
         joinColumns = @JoinColumn(name = "job_application_id"),

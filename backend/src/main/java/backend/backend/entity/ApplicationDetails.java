@@ -1,5 +1,6 @@
 package backend.backend.entity;
 import jakarta.persistence.*;
+import com.fasterxml.jackson.annotation.JsonBackReference;
 
 @Entity
 @Table(name = "application_details")
@@ -16,6 +17,7 @@ public class ApplicationDetails {
 
     @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "job_application_id", unique = true)
+    @JsonBackReference
     private JobApplication jobApplication;
 
     public Long getId() {
