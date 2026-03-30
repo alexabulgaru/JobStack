@@ -43,4 +43,14 @@ public class JobApplicationController {
         jobApplicationService.deleteApplication(id);
         return ResponseEntity.ok("Application deleted successfully");
     }
+
+    @GetMapping("/stats/status")
+    public ResponseEntity<java.util.Map<String, Long>> getStatsByStatus() {
+        return ResponseEntity.ok(jobApplicationService.getStatsByStatus());
+    }
+
+    @GetMapping("/stats/monthly")
+    public ResponseEntity<java.util.Map<String, Long>> getMonthlyEvolutionStats() {
+        return ResponseEntity.ok(jobApplicationService.getMonthlyEvolutionStats());
+    }
 }

@@ -25,6 +25,9 @@ public class JobApplication {
     @JoinColumn(name = "status_id", nullable = false)
     private Status status;
 
+    @Column(name = "applied_date", nullable = false)
+    private java.time.LocalDate appliedDate;
+
     @OneToOne(mappedBy = "jobApplication", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
     @JsonManagedReference
     private ApplicationDetails applicationDetails;
@@ -97,6 +100,15 @@ public class JobApplication {
 
     public JobApplication setTags(Set<Tag> tags) {
         this.tags = tags;
+        return this;
+    }
+
+    public java.time.LocalDate getAppliedDate() {
+        return appliedDate;
+    }
+
+    public JobApplication setAppliedDate(java.time.LocalDate appliedDate) {
+        this.appliedDate = appliedDate;
         return this;
     }
 }

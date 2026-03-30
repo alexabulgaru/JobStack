@@ -1,4 +1,5 @@
 package backend.backend.service.dto;
+import java.time.LocalDate;
 
 import java.util.Set;
 
@@ -9,6 +10,7 @@ public class JobApplicationRequest {
     private Set<Long> tagIds;
     private String description;
     private String hrContactEmail;
+    private LocalDate appliedDate;
 
     public String getCompanyName() {
         return companyName;
@@ -56,5 +58,13 @@ public class JobApplicationRequest {
 
     public void setHrContactEmail(String hrContactEmail) {
         this.hrContactEmail = hrContactEmail;
+    }
+
+    public LocalDate getAppliedDate() {
+        return appliedDate;
+    }
+
+    public void setAppliedDate(LocalDate appliedDate) {
+        this.appliedDate = appliedDate;
     }
 }

@@ -7,4 +7,6 @@ import java.util.List;
 
 public interface JobApplicationRepository extends JpaRepository<JobApplication, Long> {
     List<JobApplication> findAllByUser(User user);
+
+    boolean existsByUserAndCompanyNameIgnoreCaseAndJobTitleIgnoreCase(User user, String companyName, String jobTitle);
 }

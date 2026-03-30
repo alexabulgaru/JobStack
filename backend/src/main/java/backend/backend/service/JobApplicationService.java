@@ -8,8 +8,11 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
 public class JobApplicationService {
@@ -38,9 +41,20 @@ public class JobApplicationService {
         Status status = statusRepository.findById(request.getStatusId())
                 .orElseThrow(() -> new RuntimeException("Status not found"));
 
+        boolean alreadyExists = jobApplicationRepository.existsByUserAndCompanyNameIgnoreCaseAndJobTitleIgnoreCase(
+                currentUser, request.getCompanyName(), request.getJobTitle()
+        );
+
+        if (alreadyExists) {
+            throw new RuntimeException("You have already applied for the " + request.getJobTitle() + " role at " + request.getCompanyName());
+        }
+
+        LocalDate finalAppliedDate = request.getAppliedDate() != null ? request.getAppliedDate() : LocalDate.now();
+
         JobApplication application = new JobApplication()
                 .setCompanyName(request.getCompanyName())
                 .setJobTitle(request.getJobTitle())
+                .setAppliedDate(finalAppliedDate)
                 .setUser(currentUser)
                 .setStatus(status);
 
@@ -70,9 +84,18 @@ public class JobApplicationService {
             throw new RuntimeException("Access denied: This is not your application");
         }
 
-        if (request.getCompanyName() != null) app.setCompanyName(request.getCompanyName());
-        if (request.getJobTitle() != null) app.setJobTitle(request.getJobTitle());
-        
+        if (request.getCompanyName() != null) {
+            app.setCompanyName(request.getCompanyName());
+        }
+
+        if (request.getJobTitle() != null) {
+            app.setJobTitle(request.getJobTitle());
+        }
+
+        if (request.getAppliedDate() != null) {
+            app.setAppliedDate(request.getAppliedDate());
+        }
+
         if (request.getStatusId() != null) {
             Status status = statusRepository.findById(request.getStatusId())
                     .orElseThrow(() -> new RuntimeException("Status not found"));
@@ -86,8 +109,13 @@ public class JobApplicationService {
                 details.setJobApplication(app);
                 app.setApplicationDetails(details);
             }
-            if (request.getDescription() != null) details.setDescription(request.getDescription());
-            if (request.getHrContactEmail() != null) details.setHrContactEmail(request.getHrContactEmail());
+            if (request.getDescription() != null) {
+                details.setDescription(request.getDescription());
+            }
+
+            if (request.getHrContactEmail() != null) {
+                details.setHrContactEmail(request.getHrContactEmail());
+            }
         }
 
         if (request.getTagIds() != null) {
@@ -113,6 +141,7 @@ public class JobApplicationService {
         dto.setId(app.getId());
         dto.setCompanyName(app.getCompanyName());
         dto.setJobTitle(app.getJobTitle());
+        dto.setAppliedDate(app.getAppliedDate());
         dto.setStatus(app.getStatus() != null ? app.getStatus().getName() : null);
         dto.setTags(app.getTags() != null ? app.getTags().stream().map(Tag::getName).collect(java.util.stream.Collectors.toSet()) : null);
         String userEmail = null;
@@ -141,5 +170,28 @@ public class JobApplicationService {
             throw new RuntimeException("Access denied");
         }
         jobApplicationRepository.delete(app);
+    }
+
+    public Map<String, Long> getStatsByStatus() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User currentUser = userRepository.findByEmail(email).orElseThrow();
+        
+        return jobApplicationRepository.findAllByUser(currentUser).stream()
+            .collect(Collectors.groupingBy(
+                app -> app.getStatus().getName(),
+                Collectors.counting()
+            ));
+    }
+
+    public Map<String, Long> getMonthlyEvolutionStats() {
+        String email = SecurityContextHolder.getContext().getAuthentication().getName();
+        User currentUser = userRepository.findByEmail(email).orElseThrow();
+        
+        return jobApplicationRepository.findAllByUser(currentUser).stream()
+            .filter(app -> app.getAppliedDate() != null)
+            .collect(Collectors.groupingBy(
+                app -> app.getAppliedDate().getYear() + "-" + String.format("%02d", app.getAppliedDate().getMonthValue()),
+                Collectors.counting()
+            ));
     }
 }
