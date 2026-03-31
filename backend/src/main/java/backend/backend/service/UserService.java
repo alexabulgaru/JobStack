@@ -8,8 +8,10 @@ import backend.backend.service.dto.UserResponse;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
-import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
@@ -30,10 +32,9 @@ public class UserService {
         return mapToResponse(user);
     }
 
-    public List<UserResponse> getAllUsers() {
-        return userRepository.findAll().stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+    public Page<UserResponse> getAllUsers(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return userRepository.findAll(pageable).map(this::mapToResponse);
     }
 
     @Transactional

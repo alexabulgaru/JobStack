@@ -14,6 +14,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+
 @Service
 public class JobApplicationService {
 
@@ -128,12 +132,15 @@ public class JobApplicationService {
         return mapToResponse(saved);
     }
 
-    public List<JobApplicationResponse> getMyApplications() {
+    @Transactional(readOnly = true)
+    public Page<JobApplicationResponse> getMyApplications(int page, int size) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User currentUser = userRepository.findByEmail(email).orElseThrow();
-        List<JobApplication> apps = jobApplicationRepository.findAllByUser(currentUser);
-        return apps.stream().map(this::mapToResponse).toList();
-
+        
+        Pageable pageable = PageRequest.of(page, size);
+        
+        return jobApplicationRepository.findAllByUser(currentUser, pageable)
+                .map(this::mapToResponse);
     }
 
     private JobApplicationResponse mapToResponse(JobApplication app) {

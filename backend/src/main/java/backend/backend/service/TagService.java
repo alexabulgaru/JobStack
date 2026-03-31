@@ -3,7 +3,9 @@ package backend.backend.service;
 import backend.backend.entity.Tag;
 import backend.backend.repository.TagRepository;
 import org.springframework.stereotype.Service;
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class TagService {
@@ -25,8 +27,9 @@ public class TagService {
         return tagRepository.save(tag);
     }
 
-    public List<Tag> getAllTags() {
-        return tagRepository.findAll();
+    public Page<Tag> getAllTags(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return tagRepository.findAll(pageable);
     }
 
     public Tag getById(Long id) {

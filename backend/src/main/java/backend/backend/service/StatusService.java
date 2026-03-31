@@ -2,9 +2,12 @@ package backend.backend.service;
 
 import backend.backend.entity.Status;
 import backend.backend.repository.StatusRepository;
+
+import org.springframework.data.domain.PageRequest;
 import org.springframework.stereotype.Service;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class StatusService {
@@ -26,8 +29,9 @@ public class StatusService {
         return statusRepository.save(status);
     }
 
-    public List<Status> getAllStatuses() {
-        return statusRepository.findAll();
+    public Page<Status> getAllStatuses(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        return statusRepository.findAll(pageable);
     }
 
     public Status getStatusById(Long id) {

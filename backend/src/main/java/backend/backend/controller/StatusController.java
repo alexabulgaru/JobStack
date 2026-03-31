@@ -5,8 +5,7 @@ import backend.backend.service.StatusService;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 @RestController
 @RequestMapping("/api/statuses")
@@ -26,8 +25,11 @@ public class StatusController {
 
     @GetMapping("/get-all")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<Status>> getAllStatuses() {
-        return ResponseEntity.ok(statusService.getAllStatuses());
+    public ResponseEntity<Page<Status>> getAllStatuses(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(statusService.getAllStatuses(page, size));
     }
 
     @GetMapping("/get/{id}")

@@ -6,7 +6,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 @RestController
 @RequestMapping("/api/tags")
@@ -26,8 +26,11 @@ public class TagController {
 
     @GetMapping("/get-all")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<List<Tag>> getAllTags() {
-        return ResponseEntity.ok(tagService.getAllTags());
+    public ResponseEntity<Page<Tag>> getAllTags(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(tagService.getAllTags(page, size));
     }
 
     @GetMapping("/get-one/{id}")

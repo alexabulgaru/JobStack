@@ -9,9 +9,9 @@ import backend.backend.service.dto.FeedbackResponse;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.stream.Collectors;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 
 @Service
 public class FeedbackService {
@@ -41,19 +41,23 @@ public class FeedbackService {
         return mapToResponse(saved);
     }
 
-    public List<FeedbackResponse> getMyFeedbacks() {
+    @Transactional(readOnly = true)
+    public Page<FeedbackResponse> getMyFeedbacks(int page, int size) {
         String email = SecurityContextHolder.getContext().getAuthentication().getName();
         User currentUser = userRepository.findByEmail(email).orElseThrow();
         
-        return feedbackRepository.findAllByUser(currentUser).stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+        Pageable pageable = PageRequest.of(page, size);
+        
+        return feedbackRepository.findAllByUser(currentUser, pageable)
+                .map(this::mapToResponse);
     }
 
-    public List<FeedbackResponse> getAllFeedbacks() {
-        return feedbackRepository.findAll().stream()
-                .map(this::mapToResponse)
-                .collect(Collectors.toList());
+    @Transactional(readOnly = true)
+    public Page<FeedbackResponse> getAllFeedbacks(int page, int size) {
+        Pageable pageable = PageRequest.of(page, size);
+        
+        return feedbackRepository.findAll(pageable)
+                .map(this::mapToResponse);
     }
 
     private FeedbackResponse mapToResponse(Feedback feedback) {

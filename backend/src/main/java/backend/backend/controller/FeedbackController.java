@@ -6,8 +6,7 @@ import backend.backend.service.dto.FeedbackResponse;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.List;
+import org.springframework.data.domain.Page;
 
 @RestController
 @RequestMapping("/api/feedbacks")
@@ -26,13 +25,19 @@ public class FeedbackController {
     }
 
     @GetMapping("/my-list")
-    public ResponseEntity<List<FeedbackResponse>> getMyList() {
-        return ResponseEntity.ok(feedbackService.getMyFeedbacks());
+    public ResponseEntity<Page<FeedbackResponse>> getMyList(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(feedbackService.getMyFeedbacks(page, size));
     }
 
     @GetMapping("/get-all")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<List<FeedbackResponse>> getAll() {
-        return ResponseEntity.ok(feedbackService.getAllFeedbacks());
+    public ResponseEntity<Page<FeedbackResponse>> getAll(
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size
+    ) {
+        return ResponseEntity.ok(feedbackService.getAllFeedbacks(page, size));
     }
 }
