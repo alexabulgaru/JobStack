@@ -1,13 +1,5 @@
 package backend.backend.service;
 
-import backend.backend.entity.*;
-import backend.backend.repository.*;
-import backend.backend.service.dto.JobApplicationRequest;
-import backend.backend.service.dto.JobApplicationResponse;
-import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
 import java.time.LocalDate;
 import java.util.HashSet;
 import java.util.List;
@@ -17,6 +9,21 @@ import java.util.stream.Collectors;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import backend.backend.entity.ApplicationDetails;
+import backend.backend.entity.JobApplication;
+import backend.backend.entity.Status;
+import backend.backend.entity.Tag;
+import backend.backend.entity.User;
+import backend.backend.repository.JobApplicationRepository;
+import backend.backend.repository.StatusRepository;
+import backend.backend.repository.TagRepository;
+import backend.backend.repository.UserRepository;
+import backend.backend.service.dto.JobApplicationRequest;
+import backend.backend.service.dto.JobApplicationResponse;
 
 @Service
 public class JobApplicationService {
@@ -59,6 +66,7 @@ public class JobApplicationService {
                 .setCompanyName(request.getCompanyName())
                 .setJobTitle(request.getJobTitle())
                 .setAppliedDate(finalAppliedDate)
+            .setTimeline(request.getTimeline())
                 .setUser(currentUser)
                 .setStatus(status);
 
@@ -98,6 +106,10 @@ public class JobApplicationService {
 
         if (request.getAppliedDate() != null) {
             app.setAppliedDate(request.getAppliedDate());
+        }
+
+        if (request.getTimeline() != null) {
+            app.setTimeline(request.getTimeline());
         }
 
         if (request.getStatusId() != null) {
@@ -149,6 +161,7 @@ public class JobApplicationService {
         dto.setCompanyName(app.getCompanyName());
         dto.setJobTitle(app.getJobTitle());
         dto.setAppliedDate(app.getAppliedDate());
+        dto.setTimeline(app.getTimeline());
         dto.setStatus(app.getStatus() != null ? app.getStatus().getName() : null);
         dto.setTags(app.getTags() != null ? app.getTags().stream().map(Tag::getName).collect(java.util.stream.Collectors.toSet()) : null);
         String userEmail = null;

@@ -1,6 +1,5 @@
 package backend.backend.service.dto;
 import java.time.LocalDate;
-
 import java.util.Set;
 
 public class JobApplicationRequest {
@@ -11,6 +10,7 @@ public class JobApplicationRequest {
     private String description;
     private String hrContactEmail;
     private LocalDate appliedDate;
+    private String timeline;
 
     public String getCompanyName() {
         return companyName;
@@ -66,5 +66,13 @@ public class JobApplicationRequest {
 
     public void setAppliedDate(LocalDate appliedDate) {
         this.appliedDate = appliedDate;
+    }
+
+    public String getTimeline() {
+        return timeline;
+    }
+
+    public void setTimeline(String timeline) {
+        this.timeline = timeline;
     }
 }

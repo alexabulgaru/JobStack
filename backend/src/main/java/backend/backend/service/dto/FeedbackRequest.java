@@ -5,6 +5,7 @@ public class FeedbackRequest {
     private Integer rating;
     private Boolean contactConsent;
     private String comments;
+    private String userEmail;
 
     public String getCategory() {
         return category;
@@ -36,5 +37,13 @@ public class FeedbackRequest {
 
     public void setComments(String comments) { 
         this.comments = comments; 
+    }
+
+    public String getUserEmail() {
+        return userEmail;
+    }
+
+    public void setUserEmail(String userEmail) {
+        this.userEmail = userEmail;
     }
 }

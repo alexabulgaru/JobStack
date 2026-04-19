@@ -1,11 +1,21 @@
 package backend.backend.controller;
 
-import backend.backend.entity.Status;
-import backend.backend.service.StatusService;
+import org.springframework.data.domain.Page;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.*;
-import org.springframework.data.domain.Page;
+import org.springframework.web.bind.annotation.DeleteMapping;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
+import org.springframework.web.bind.annotation.RestController;
+
+import backend.backend.service.StatusService;
+import backend.backend.service.dto.StatusRequest;
+import backend.backend.service.dto.StatusResponse;
 
 @RestController
 @RequestMapping("/api/statuses")
@@ -19,13 +29,13 @@ public class StatusController {
 
     @PostMapping("/create")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Status> createStatus(@RequestBody Status status) {
-        return ResponseEntity.ok(statusService.createStatus(status));
+    public ResponseEntity<StatusResponse> createStatus(@RequestBody StatusRequest request) {
+        return ResponseEntity.ok(statusService.createStatus(request));
     }
 
     @GetMapping("/get-all")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Page<Status>> getAllStatuses(
+    public ResponseEntity<Page<StatusResponse>> getAllStatuses(
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size
     ) {
@@ -34,14 +44,14 @@ public class StatusController {
 
     @GetMapping("/get/{id}")
     @PreAuthorize("isAuthenticated()")
-    public ResponseEntity<Status> getStatusById(@PathVariable Long id) {
+    public ResponseEntity<StatusResponse> getStatusById(@PathVariable Long id) {
         return ResponseEntity.ok(statusService.getStatusById(id));
     }
 
     @PutMapping("/update/{id}")
     @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<Status> updateStatus(@PathVariable Long id, @RequestBody Status status) {
-        return ResponseEntity.ok(statusService.updateStatus(id, status));
+    public ResponseEntity<StatusResponse> updateStatus(@PathVariable Long id, @RequestBody StatusRequest request) {
+        return ResponseEntity.ok(statusService.updateStatus(id, request));
     }
 
     @DeleteMapping("/delete/{id}")
