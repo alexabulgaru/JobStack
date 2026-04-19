@@ -17,13 +17,19 @@ case "$1" in
         ;;
     "run")
         echo "run hopefully"
-        ./mvnw spring-boot:run
+        ./mvnw spring-boot:run &
+        sleep 5
+        xdg-open http://localhost:8080/swagger-ui.html
+        wait
         ;;
     "all")
         echo "flyway migrate"
         ./mvnw flyway:migrate
         echo "run app"
-        ./mvnw spring-boot:run
+        ./mvnw spring-boot:run &
+        sleep 5
+        xdg-open http://localhost:8080/swagger-ui.html
+        wait
         ;;
     *)
         echo "how to use this script (pray first of all):"
