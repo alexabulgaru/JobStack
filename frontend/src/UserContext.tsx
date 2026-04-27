@@ -8,7 +8,7 @@ import {
     type ReactNode,
 } from 'react'
 import axios from 'axios'
-import { useNavigate } from 'react-router-dom'
+import { useNavigate, useLocation } from 'react-router-dom'
 import type { User, UserContextValue } from './common/types.ts'
 import { API_BASE_URL } from './common/api'
 import { getSecureToken } from './common/secureStorage'
@@ -17,6 +17,7 @@ const UserContext = createContext<UserContextValue | undefined>(undefined)
 
 export function UserProvider({ children }: { children: ReactNode }) {
     const navigate = useNavigate()
+    const location = useLocation()
     const [user, setUser] = useState<User | null>(null)
     const [loading, setLoading] = useState(false)
     const [error, setError] = useState<string | null>(null)
@@ -60,7 +61,10 @@ export function UserProvider({ children }: { children: ReactNode }) {
                 if (status === 401 || status === 403) {
                     setUser(null)
                     setError('Unauthorized. Please login again.')
-                    navigate('/', { replace: true })
+                    const publicPaths = ['/', '/login', '/register']
+                    if (!publicPaths.includes(location.pathname)) {
+                        navigate('/login', { replace: true })
+                    }
                     return
                 }
 
@@ -72,7 +76,7 @@ export function UserProvider({ children }: { children: ReactNode }) {
         } finally {
             setLoading(false)
         }
-    }, [navigate])
+    }, [navigate, location])
 
     const clearUser = useCallback(() => {
         setUser(null)
